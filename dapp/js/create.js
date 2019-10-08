@@ -46,57 +46,57 @@ function enableEnterSignerAddressForms() {
 //
 
 function enableExportSignerAddressForms() {
-	$("form.export-signer-address-form").submit(function (event) {
-		event.preventDefault();
-		var form = $(this);
-		var wallet = form.find('select.wallet-account-hardware-wallet').val();
-		var minimumTrezorFirmware = "1.6.2";
-		if (wallet == 'Trezor') {
-			TrezorConnect.manifest({
-				email: "foo@bar.com",
-				appUrl: window.location.hostname,
-			});
-			TrezorConnect.ethereumGetAddress({
-				path: form.find('input.wallet-account-bip32-path').val(),
-			}).then(function (result) {
-				if (result.success) {
-					let payload = result.payload;
-					console.info("Successfully exported account info:", payload);
-					var address = payload.address;
-					var check = validateSignerAddress(address);
-					if (check.valid) {
-						form.find('.trezor-errors').html('');
-						activateSigner(form.closest('.signer'), address);
-					} else {
-						form.find('.trezor-errors').html(check.message);
-						form.find('button').prop('disabled', true);
-					}
-				} else {
-					console.error(result.payload.error);
-					form.find('.trezor-errors').html("Trezor Error: " + result.payload.error);
-				}
-			}, minimumTrezorFirmware);
-		} else {
-			var z = TransportU2F.create().then(transport => {
-				var ledgereth = new LedgerEth(transport);
-				ledgereth.getAddress(form.find('input.wallet-account-bip32-path').val()).then(function (result) {
-					console.info("Successfully exported account info:", result.address);
-					var address = result.address;
-					var check = validateSignerAddress(address);
-					if (check.valid) {
-						form.find('.trezor-errors').html('');
-						activateSigner(form.closest('.signer'), address);
-					} else {
-						form.find('.trezor-errors').html(check.message);
-						form.find('button').prop('disabled', true);
-					}
-				}, function (reason) {
-					console.error(reason);
-					form.find('.trezor-errors').html("Ledger Error: Is your Ledger plugged in, PIN entered, with Ethereum app open? (" + reason.statusText + ")");
-				});
-			});
-		}
-	});
+  $("form.export-signer-address-form").submit(function (event) {
+    event.preventDefault();
+    var form = $(this);
+    var wallet = form.find('select.wallet-account-hardware-wallet').val();
+    var minimumTrezorFirmware = "1.6.2"
+    if (wallet == 'Trezor') {
+      TrezorConnect.manifest({
+        email: "foo@bar.com",
+        appUrl: window.location.hostname,
+      });
+      TrezorConnect.ethereumGetAddress({
+        path: form.find('input.wallet-account-bip32-path').val()
+      }).then(function (result) {
+        if (result.success) {
+          let payload = result.payload;
+          console.info("Successfully exported account info:", payload);
+          var address = payload.address;
+          var check = validateSignerAddress(address);
+          if (check.valid) {
+            form.find('.trezor-errors').html('');
+            activateSigner(form.closest('.signer'), address);
+          } else {
+            form.find('.trezor-errors').html(check.message);
+            form.find('button').prop('disabled', true);
+          }
+        } else {
+          console.error(result.payload.error);
+          form.find('.trezor-errors').html("Trezor Error: " + result.payload.error);
+        }
+      }, minimumTrezorFirmware);
+    } else {
+      var z = TransportU2F.create().then(transport => {
+        var ledgereth = new LedgerEth(transport);
+        ledgereth.getAddress(form.find('input.wallet-account-bip32-path').val()).then(function (result) {
+          console.info("Successfully exported account info:", result.address);
+          var address = result.address;
+          var check = validateSignerAddress(address);
+          if (check.valid) {
+            form.find('.trezor-errors').html('');
+            activateSigner(form.closest('.signer'), address);
+          } else {
+            form.find('.trezor-errors').html(check.message);
+            form.find('button').prop('disabled', true);
+          }
+        }, function (reason) {
+          console.error(reason);
+          form.find('.trezor-errors').html("Ledger Error: Is your Ledger plugged in, PIN entered, with Ethereum app open? (" + reason.statusText + ")");
+        });
+      });
+    }
+  });
 }
 
 
