@@ -273,21 +273,25 @@ function enableSignMessageForms() {
 	var message = form.find('.spend-message-trezor').html();
 	form.find('.trezor-errors').html('');
 	var minimumTrezorFirmware = "1.6.2"	
-	if (wallet == 'Trezor') {	
-     	    TrezorConnect.ethereumSignMessage({
+	if (wallet == 'Trezor') {
+		TrezorConnect.manifest({
+			email: "foo@bar.com",
+			appUrl: window.location.hostname,
+		});
+		TrezorConnect.ethereumSignMessage({
                 path: form.find('input.wallet-account-bip32-path').val(),
                 message: message
-            }).then(function(result) {
-		if (result.success) {
+		}).then(function(result) {
+			if (result.success) {
                     let payload = result.payload;
 		    console.info("Successfully signed message: ", payload);
 		    activateSignature(form.closest('.signature'), payload);
 		    // parse signature into r,s,v
-		} else {
+			} else {
 		    console.error(result.payload.error);
 		    form.find('.trezor-errors').html("Trezor Error: " + result.payload.error);
-		}
-	    }, minimumTrezorFirmware);
+			}
+	    	}, minimumTrezorFirmware);
 	} else if (wallet == 'Ledger') {
 	    var ledgerMessage = stringToHex(message)
             TransportU2F.create().then(transport => {

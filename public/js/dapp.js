@@ -89058,6 +89058,10 @@ function enableExportSignerAddressForms() {
 	var wallet = form.find('select.wallet-account-hardware-wallet').val()
 	var minimumTrezorFirmware = "1.6.2"
 	if (wallet == 'Trezor') {
+          TrezorConnect.manifest({
+            email: "foo@bar.com",
+            appUrl: window.location.hostname,
+          });
      	    TrezorConnect.ethereumGetAddress({
                 path: form.find('input.wallet-account-bip32-path').val()
             }).then(function(result) {
@@ -89513,7 +89517,11 @@ function enableSignMessageForms() {
 	var message = form.find('.spend-message-trezor').html();
 	form.find('.trezor-errors').html('');
 	var minimumTrezorFirmware = "1.6.2"	
-	if (wallet == 'Trezor') {	
+	if (wallet == 'Trezor') {
+          TrezorConnect.manifest({
+            email: "foo@bar.com",
+            appUrl: window.location.hostname,
+          });
      	    TrezorConnect.ethereumSignMessage({
                 path: form.find('input.wallet-account-bip32-path').val(),
                 message: message
